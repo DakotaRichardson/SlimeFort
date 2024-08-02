@@ -19,6 +19,12 @@ float64 last_time = os_get_current_time_in_seconds();
 while (!window.should_close) {
 	reset_temporary_storage();
 
+	//Overide the cordainate system to be the same size as the window
+	draw_frame.projection = m4_make_orthographic_projection(window.width * -0.5, window.width * 0.5, window.height * -0.5, window.height * 0.5,-1,10);
+	// Zoom in camera
+	float zoom = 5.3;
+	draw_frame.view = m4_make_scale(v3(1.0/zoom,1.0/zoom,1));
+
 	float64 now = os_get_current_time_in_seconds();
 	float64 delta_t = now - last_time;
 	last_time = now;
@@ -47,12 +53,13 @@ while (!window.should_close) {
 
 
 	//player_pos = player_pos + (input_axis * 10)
-	player_pos = v2_add(player_pos, v2_mulf(input_axis, 1 * delta_t));
+	player_pos = v2_add(player_pos, v2_mulf(input_axis, 50 * delta_t));
 
-
+	Vector2 size = v2(6.0,8.0);
 	Matrix4 xform = m4_scalar(1.0);
 	xform = m4_translate(xform, v3(player_pos.x,player_pos.y,0));
-	draw_image_xform(player,xform, v2(.5f, .5f), COLOR_RED);
+	xform = m4_translate(xform, v3(size.x * -.5,0,0));
+	draw_image_xform(player,xform, v2(12.0f, 9.0f), COLOR_RED);
 
 	gfx_update();
 	seconds_counter += delta_t;
